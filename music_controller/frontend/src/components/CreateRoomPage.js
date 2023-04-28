@@ -11,7 +11,7 @@ import {
         FormControlLabel
     } from "@mui/material";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const CreateRoomPage = () => {
     let defaultVotes = 2
@@ -19,6 +19,8 @@ export const CreateRoomPage = () => {
         guestCanPause: true,
         votesToSkip: defaultVotes
     })
+
+    let navigate = useNavigate();
 
     const handleVotesChange = (e) => {
         setBackData(data => ({
@@ -35,7 +37,7 @@ export const CreateRoomPage = () => {
     }
 
     const handleRoomButtonPressed = async() => {
-        const feedBack = await fetch('/api/create-room/', {
+        const feedBack = await fetch('/api/create-room', {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -44,9 +46,10 @@ export const CreateRoomPage = () => {
                 votes_to_skip: backData.votesToSkip,
                 guest_can_pause: backData.guestCanPause
             })
-        })
-        const JsonFeedBack = await feedBack.json()
-        console.log(JsonFeedBack)
+        });
+
+        const JsonFeedBack = await feedBack.json();
+        navigate("/room/" + JsonFeedBack.code);
     }
 
     return (
@@ -62,7 +65,7 @@ export const CreateRoomPage = () => {
                     <RadioGroup 
                         row 
                         defaultValue="true" 
-                        onChange={this.handleGuestCanPauseChange}
+                        onChange={handleGuestCanPauseChange}
                     >
                         <FormControlLabel 
                             value="true" 
@@ -84,8 +87,8 @@ export const CreateRoomPage = () => {
                     <TextField 
                         required={true} 
                         type="number" 
-                        onChange={this.handleVotesChange}
-                        defaultValue={this.defaultVotes}
+                        onChange={handleVotesChange}
+                        defaultValue={defaultVotes}
                         inputProps={{
                             min: 1,
                             style: { textAlign: "center" },
@@ -100,7 +103,7 @@ export const CreateRoomPage = () => {
                 <Button 
                     color="primary" 
                     variant="contained" 
-                    onClick={this.handleRoomButtonPressed}
+                    onClick={handleRoomButtonPressed}
                 >
                     Create a Room
                 </Button>
